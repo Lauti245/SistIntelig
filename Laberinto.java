@@ -10,7 +10,6 @@ public class Laberinto {
 	
 	
 	
-	//Laberinto aux = new Laberinto(3,4,1,1,2,3,8);
 	public Laberinto(int m ,int n,int iniX,int iniY,int finX,int finY,int numObstaculos){
 		filas =m;
 		columnas = n;
@@ -21,11 +20,11 @@ public class Laberinto {
 		int current =0 ;
 		x[iniX][iniY]= ini;
 		x[finX][finY]= fin;
-		while(current < numObstaculos){
-			int	varX = (int) (Math.random() * (this.filas-1)) ;
+		while(current < numObstaculos){ // mientras no se haya llegado al numObstaculos requerido
+			int	varX = (int) (Math.random() * (this.filas-1)) ; 
 			int varY = (int) (Math.random() * (this.columnas-1)) ;
-			colocar(varX,varY);
-			current++;
+			colocar(varX,varY);  // añadimos aleatoriaamente un obstaculo
+			current++; // incrementa el num obstaculos
 			if(x[varX][varY]!= ini && x[varX][varY] != fin ){
 				
 				x[varX][varY] = obs;
@@ -35,15 +34,16 @@ public class Laberinto {
 	}
 	private void colocar(int i , int  j){
 		if(x[i][j]== ini || x[i][j] == fin ||  x[i][j]== obs ){ // si es objetivo o hay obstaculo
-			if(i==filas-1 && j == columnas-1 ){
+		//recorremos la matriz en busca de hueco libre desde la coordenada dada hasta el final de la matriz
+			if(i==filas-1 && j == columnas-1 ){ // si esta al final de la matriz volvemos al principio
 				colocar(0,0);
-			}else if (j == columnas-1){
+			}else if (j == columnas-1){ // si no hay mas columnas pasamos a la fila siguiente
 				colocar(i+1,0);
 			}else {
-				colocar(i,j+1);
+				colocar(i,j+1); // pasamos a la siguiente columna
 			}
 			}
-		 else{ // si esta vacio
+		 else{ // si esta libre colocamos
 			 x[i][j]= obs;
 		 }
 		}
