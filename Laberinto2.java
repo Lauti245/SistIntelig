@@ -14,18 +14,28 @@ public class Main {
         }
         
         // Generar ubicación aleatoria de la letra I
-        int iFila = rand.nextInt(60);
-        int iColumna = rand.nextInt(80);
-        matriz[iFila][iColumna] = 'I';
+       Random ini = new Random();
+        int inicio = 0;
+        while (inicio <1 ) {
+            int fila = ini.nextInt(60);
+            int columna = ini.nextInt(80);
+            if (matriz[fila][columna] == ' ') {
+                matriz[fila][columna] = 'I';
+                inicio++;
+            }
+        }
         
         // Generar ubicación aleatoria de la letra F
-        int fFila = rand.nextInt(60);
-        int fColumna = rand.nextInt(80);
-        while (fFila == iFila && fColumna == iColumna) { // Asegurarse de que la F no esté en la misma ubicación que la I
-            fFila = rand.nextInt(60);
-            fColumna = rand.nextInt(80);
+        Random fin = new Random();
+        int fina = 0;
+        while (fina <1 ) {
+            int fila = fin.nextInt(60);
+            int columna = fin.nextInt(80);
+            if (matriz[fila][columna] == ' ') {
+                matriz[fila][columna] = 'F';
+                fina++;
+            }
         }
-        matriz[fFila][fColumna] = 'F';
         
         // Imprimir la matriz
         for (int i = 0; i < 60; i++) {
