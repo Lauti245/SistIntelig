@@ -6,6 +6,14 @@ public class Main {
         char[][] matriz = new char[60][80];
         Random rand = new Random();
         
+        
+        //Inicializar la matriz con huecos en blanco
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz[i].length; j++) {
+                matriz[i][j] = ' ';
+            }
+        }
+        
         // Generar 1200 asteriscos aleatorios
         for (int i = 0; i < 1200; i++) {
             int fila = rand.nextInt(60);
