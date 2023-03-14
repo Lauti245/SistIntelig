@@ -20,10 +20,10 @@ public class Laberinto {
 				matriz[i][j] = ' ';
 			}
 		}
-		// Generar 1200 asteriscos aleatorios
+		// Generar 1440 asteriscos aleatorios
 		Random random = new Random();
 		int asteriscosGenerados = 0;
-		while (asteriscosGenerados < num) {
+		while (asteriscosGenerados < 1440) {
 			int fila = random.nextInt(60);
 			int columna = random.nextInt(80);
 			if (matriz[fila][columna] == ' ') {
