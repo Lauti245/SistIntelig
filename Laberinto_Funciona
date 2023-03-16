@@ -1,0 +1,162 @@
+import java.util.*;
+
+public class Laberinto2 {
+    private static final int ROWS = 60;
+    private static final int COLS = 80;
+    private static final int OBSTACLE = 1;
+    private static final int START = 2;
+    private static final int GOAL = 3;
+    
+    private static int[][] grid = new int[ROWS][COLS];
+    private static Node[][] nodes = new Node[ROWS][COLS];
+    
+    public static void main(String[] args) {
+        // Generar la matriz de prueba
+        generateGrid();
+        
+        // Encontrar el camino más corto desde el punto de inicio al punto objetivo
+        Node startNode = nodes[getRandomNumber(0, ROWS-1)][getRandomNumber(0, COLS-1)];
+        Node goalNode = nodes[getRandomNumber(0, ROWS-1)][getRandomNumber(0, COLS-1)];
+        while (grid[goalNode.row][goalNode.col] == OBSTACLE || goalNode == startNode) {
+            goalNode = nodes[getRandomNumber(0, ROWS-1)][getRandomNumber(0, COLS-1)];
+        }
+        List<Node> path = findPath(startNode, goalNode);
+        
+        // Imprimir la matriz de prueba con el camino más corto resaltado
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                if (grid[i][j] == OBSTACLE) {
+                    System.out.print("*");
+                } else if (nodes[i][j] == startNode) {
+                    System.out.print("I");
+                } else if (nodes[i][j] == goalNode) {
+                    System.out.print("G");
+                } else if (path.contains(nodes[i][j])) {
+                    System.out.print("+");
+                } else {
+                    System.out.print(" ");
+                }
+            }
+            System.out.println();
+        }
+    }
+    
+    // Generar la matriz de prueba con obstáculos y puntos de inicio y objetivo aleatorios
+    private static void generateGrid() {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                if (getRandomNumber(1, 100) <= 30) { // 10% de probabilidad de obstáculo
+                    grid[i][j] = OBSTACLE;
+                }
+                nodes[i][j] = new Node(i, j);
+            }
+        }
+    }
+    
+    // Encontrar el camino más corto desde el punto de inicio al punto objetivo
+    private static List<Node> findPath(Node start, Node goal) {
+        Set<Node> visited = new HashSet<>();
+        PriorityQueue<Node> openList = new PriorityQueue<>(Comparator.comparingInt(Node::getF));
+        start.g = 0;
+        start.h = heuristic(start, goal);
+        openList.add(start);
+        
+        while (!openList.isEmpty()) {
+            Node current = openList.poll();
+            if (current == goal) {
+               return reconstructPath(current);
+        }
+        visited.add(current);
+        for (Node neighbor : getNeighbors(current)) {
+            if (visited.contains(neighbor)) {
+                continue;
+            }
+            int tentativeG = current.g + distance(current, neighbor);
+            if (tentativeG < neighbor.g) {
+                neighbor.parent = current;
+                neighbor.g = tentativeG;
+                neighbor.h = heuristic(neighbor, goal);
+                if (!openList.contains(neighbor)) {
+                    openList.add(neighbor);
+                }
+            }
+        }
+    }
+    return new ArrayList<>();
+}
+
+// Obtener los vecinos de un nodo
+private static List<Node> getNeighbors(Node node) {
+    List<Node> neighbors = new ArrayList<>();
+    int row = node.row;
+    int col = node.col;
+    if (row > 0 && grid[row-1][col] != OBSTACLE) {
+        neighbors.add(nodes[row-1][col]);
+    }
+    if (row < ROWS-1 && grid[row+1][col] != OBSTACLE) {
+        neighbors.add(nodes[row+1][col]);
+    }
+    if (col > 0 && grid[row][col-1] != OBSTACLE) {
+        neighbors.add(nodes[row][col-1]);
+    }
+    if (col < COLS-1 && grid[row][col+1] != OBSTACLE) {
+        neighbors.add(nodes[row][col+1]);
+    }
+    return neighbors;
+}
+
+// Calcular la distancia entre dos nodos adyacentes
+private static int distance(Node a, Node b) {
+    int dx = Math.abs(a.col - b.col);
+    int dy = Math.abs(a.row - b.row);
+    if (dx > dy) {
+        return 14*dy + 10*(dx-dy);
+    } else {
+        return 14*dx + 10*(dy-dx);
+    }
+}
+
+// Calcular la distancia heurística entre dos nodos
+private static int heuristic(Node a, Node b) {
+    int dx = Math.abs(a.col - b.col);
+    int dy = Math.abs(a.row - b.row);
+    return 14*Math.min(dx, dy) + 10*Math.abs(dx-dy);
+}
+
+// Reconstruir el camino desde el nodo objetivo hasta el nodo inicial
+private static List<Node> reconstructPath(Node current) {
+    List<Node> path = new ArrayList<>();
+    while (current != null) {
+        path.add(current);
+        current = current.parent;
+    }
+    Collections.reverse(path);
+    return path;
+}
+
+// Obtener un número aleatorio entre min y max
+private static int getRandomNumber(int min, int max) {
+    return (int)(Math.random() * (max - min + 1) + min);
+}
+
+// Clase que representa un nodo en la matriz
+private static class Node {
+    public int row;
+    public int col;
+    public int g; // costo desde el nodo inicial hasta este nodo
+    public int h; // costo estimado desde este nodo hasta el nodo objetivo
+    public Node parent;
+    
+    public Node(int row, int col) {
+        this.row = row;
+        this.col = col;
+        this.g = Integer.MAX_VALUE;
+        this.h = Integer.MAX_VALUE;
+        this.parent = null;
+    }
+    
+    public int getF() {
+        return g + h;
+    }
+}
+}
