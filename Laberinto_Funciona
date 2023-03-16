@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Laberinto2 {
+public class AStar {
     private static final int ROWS = 60;
     private static final int COLS = 80;
     private static final int OBSTACLE = 1;
@@ -158,5 +158,4 @@ private static class Node {
     public int getF() {
         return g + h;
     }
-}
-}
+}}
