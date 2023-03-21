@@ -22,13 +22,13 @@ public class AStar {
         while (matriz[nodoFin.fil][nodoFin.col] == OBSTACULO || nodoFin == nodoInicio) {
             nodoFin = nodos[random.nextInt(FILA)][random.nextInt(COLUMNA)];
         }
-        List<Nodo> path = findPath(nodoInicio, nodoFin);
+        List<Nodo> path = buscarCamino(nodoInicio, nodoFin);
         
         // Imprimir la matriz de prueba con el camino más corto resaltado
         for (int i = 0; i < FILA; i++) {
             for (int j = 0; j < COLUMNA; j++) {
                 if (matriz[i][j] == OBSTACULO) {
-                    System.out.print("*");
+                    System.out.print("■");
                 } else if (nodos[i][j] == nodoInicio) {
                     System.out.print("I");
                 } else if (nodos[i][j] == nodoFin) {
@@ -69,30 +69,30 @@ public class AStar {
     }
     
     // Encontrar el camino más corto desde el punto de inicio al punto objetivo
-    private static List<Nodo> findPath(Nodo inicio, Nodo fin) {
+    private static List<Nodo> buscarCamino(Nodo inicio, Nodo fin) {
         Set<Nodo> visited = new HashSet<>();
-        PriorityQueue<Nodo> openList = new PriorityQueue<>(Comparator.comparingInt(Nodo::getF));
+        PriorityQueue<Nodo> openSet = new PriorityQueue<>(Comparator.comparingInt(Nodo::getF));
         inicio.g = 0;
-        inicio.h = heuristic(inicio, fin);
-        openList.add(inicio);
+        inicio.h = heuristico(inicio, fin);
+        openSet.add(inicio);
         
-        while (!openList.isEmpty()) {
-            Nodo actual = openList.poll();
+        while (!openSet.isEmpty()) {
+            Nodo actual = openSet.poll();
             if (actual == fin) {
-               return reconstructPath(actual);
+               return construirCamino(actual);
         }
         visited.add(actual);
-        for (Nodo vecino : getNeighbors(actual)) {
+        for (Nodo vecino : obtenerVecinos(actual)) {
             if (visited.contains(vecino)) {
                 continue;
             }
-            int posibleG = actual.g + distance(actual, vecino);
+            int posibleG = actual.g + heuristico(actual, vecino);
             if (posibleG < vecino.g) {
                 vecino.parent = actual;
                 vecino.g = posibleG;
-                vecino.h = heuristic(vecino, fin);
-                if (!openList.contains(vecino)) {
-                    openList.add(vecino);
+                vecino.h = heuristico(vecino, fin);
+                if (!openSet.contains(vecino)) {
+                    openSet.add(vecino);
                 }
             }
         }
@@ -101,7 +101,7 @@ public class AStar {
 }
 
 // Obtener los vecinos de un nodo
-private static List<Nodo> getNeighbors(Nodo nodo) {
+private static List<Nodo> obtenerVecinos(Nodo nodo) {
     List<Nodo> neighbors = new ArrayList<>();
     int fil = nodo.fil;
     int col = nodo.col;
@@ -120,26 +120,16 @@ private static List<Nodo> getNeighbors(Nodo nodo) {
     return neighbors;
 }
 
-// Calcular la distancia entre dos nodos adyacentes
-private static int distance(Nodo a, Nodo b) {
-    int dx = Math.abs(a.col - b.col);
-    int dy = Math.abs(a.fil - b.fil);
-    if (dx > dy) {
-        return dy + (dx-dy);
-    } else {
-        return dx + (dy-dx);
-    }
-}
-
 // Calcular la distancia heurística entre dos nodos
-private static int heuristic(Nodo a, Nodo b) {
+private static int heuristico(Nodo a, Nodo b) {
     int dx = Math.abs(a.col - b.col);
     int dy = Math.abs(a.fil - b.fil);
-    return Math.min(dx, dy) + Math.abs(dx-dy);
+    
+    return Math.abs(dx-dy);
 }
 
 // Reconstruir el camino desde el nodo objetivo hasta el nodo inicial
-private static List<Nodo> reconstructPath(Nodo actual) {
+private static List<Nodo> construirCamino(Nodo actual) {
     List<Nodo> camino = new ArrayList<>();
     while (actual != null) {
         camino.add(actual);
