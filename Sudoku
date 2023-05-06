@@ -105,5 +105,22 @@ public class Sudoku {
         //           Holes (cells without a number from 1 to 9) are represented by the value 0.
         //           It is advisable to convert this array to a data structure more amenable to manipulation.
 	}
+	
+private int[][] REPRODUCE(int[][] parent1 , int[][] parent2) {
+	int n = parent1.length;
+	int c = (int) (Math.random()*n) ;
+	
+	    int fila = (c - 1) / parent1.length; // Obtiene la fila del número
+	    int columna = (c - 1) % parent1.length; // Obtiene la columna del número
+	    
+	    for (int i = fila; i < parent1.length; i++) { // Itera desde la fila del número hasta la última fila
+	        for (int j = columna; j < parent1.length; j++) { // Itera desde la columna del número hasta la última columna
+	            parent1[i][j] = parent2[i][j]; // Modifica el valor de la celda en la fila i y columna j
+	        }
+	        columna = 0; // Resetea la columna a 0 después de la primera iteración de i
+	    }
+	
+	return parent1;		
+}
 
 }
