@@ -1,0 +1,149 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class GeneticOperators {
+
+    // Función principal que ejecuta el algoritmo genético
+    public static String geneticAlgorithm(List<String> population, List<Double> fitness) {
+        
+        // Número máximo de generaciones a crear
+        int maxGenerations = 100;
+        
+        // Tamaño de la población
+        int populationSize = population.size();
+        
+        // Probabilidad de mutación
+        double mutationProbability = 0.01;
+        
+        // Ciclo principal del algoritmo
+        for (int generation = 0; generation < maxGenerations; generation++) {
+            
+            // Selección de padres para reproducirse
+            List<Double> weights = calculateWeights(population, fitness);
+            List<String> population2 = new ArrayList<>();
+            for (int i = 0; i < populationSize; i++) {
+                String parent1 = weightedRandomChoice(population, weights);
+                String parent2 = weightedRandomChoice(population, weights);
+                String child = reproduce(parent1, parent2);
+                if (Math.random() < mutationProbability) {
+                    child = mutate(child);
+                }
+                population2.add(child);
+            }
+            
+            // Actualización de la población
+            population = population2;
+            
+            // Comprobación de si se ha encontrado un individuo suficientemente apto
+            int bestIndex = findBestIndividual(population, fitness);
+            if (fitness.get(bestIndex) >= 1.0) {
+                return population.get(bestIndex);
+            }
+        }
+        
+        // Si no se ha encontrado un individuo suficientemente apto, se devuelve el mejor de la población
+        int bestIndex = findBestIndividual(population, fitness);
+        return population.get(bestIndex);
+    }
+    
+    // Función que calcula los pesos para la selección de padres
+    private static List<Double> calculateWeights(List<String> population, List<Double> fitness) {
+        List<Double> weights = new ArrayList<>();
+        double totalFitness = 0.0;
+        for (double f : fitness) {
+            totalFitness += f;
+        }
+        for (double f : fitness) {
+            weights.add(f / totalFitness);
+        }
+        return weights;
+    }
+    
+    // Función que elige un elemento aleatorio de una lista ponderada
+    private static String weightedRandomChoice(List<String> population, List<Double> weights) {
+        double r = Math.random();
+        double sum = 0.0;
+        for (int i = 0; i < population.size(); i++) {
+            sum += weights.get(i);
+            if (r <= sum) {
+                return population.get(i);
+            }
+        }
+        return population.get(population.size() - 1);
+    }
+    
+    // Función que reproduce a dos padres para crear un hijo
+    private static String reproduce(String parent1, String parent2) {
+        int n = parent1.length();
+        Random random = new Random();
+        int c = random.nextInt(n);
+        return parent1.substring(0, c) + parent2.substring(c);
+    }
+    
+    // Función que realiza una mutación en un individuo
+    private static String mutate(String individual) {
+        int n = individual.length();
+        Random random = new Random();
+        int index = random.nextInt(n);
+        char newChar = (char) (random.nextInt(26) + 'a');
+        return individual.substring(0, index) + newChar + individual.substring(index + 1);
+    }
+    private static int findBestIndividual(List<String> population, List<Double> fitness) {
+        int bestIndex = 0;
+        double bestFitness = fitness.get(0);
+        for (int i = 1; i < population.size(); i++) {
+            double currentFitness = fitness.get(i);
+            if (currentFitness > bestFitness) {
+                bestIndex = i;
+                bestFitness = currentFitness;
+            }
+        }
+        return bestIndex;
+    }
+    
+    // Función para probar el algoritmo
+    public static void main(String[] args) {
+        // Generación de una población aleatoria
+        int populationSize = 100;
+        List<String> population = new ArrayList<>();
+        for (int i = 0; i < populationSize; i++) {
+            String individual = generateIndividual(10);
+            population.add(individual);
+        }
+        
+        // Cálculo de la aptitud de cada individuo
+        List<Double> fitness = new ArrayList<>();
+        for (String individual : population) {
+            double f = calculateFitness(individual);
+            fitness.add(f);
+        }
+        
+        // Ejecución del algoritmo genético
+        String result = geneticAlgorithm(population, fitness);
+        System.out.println("El resultado es: " + result);
+    }
+    
+    // Función para generar un individuo aleatorio
+    private static String generateIndividual(int length) {
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            char c = (char) (random.nextInt(26) + 'a');
+            sb.append(c);
+        }
+        return sb.toString();
+    }
+    
+    // Función que calcula la aptitud de un individuo
+    private static double calculateFitness(String individual) {
+        String target = "hello";
+        double score = 0.0;
+        for (int i = 0; i < individual.length(); i++) {
+            if (individual.charAt(i) == target.charAt(i)) {
+                score += 1.0;
+            }
+        }
+        return score / target.length();
+    }
+}
