@@ -163,6 +163,22 @@ private int[] REPRODUCE(int[] parent1 , int[] parent2) {
 	
 	return parent1;		
 }
+
+        // Guardar la poblacion en una lista
+
+        List<int[]> population = new ArrayList<>();
+        for (int i = 0; i<FILA; i++) {
+        	for(int j = 0; j<COLUMNA; j++) {
+        		if(matriz[i][j] == 0) {
+            		population.add(new int[] {i,j});
+        		}
+        	}
+        }
+        int[] h = population.get(2);// acceder a hueco en matriz (1,2) (2,3)... 
+       int i = h[0]; // obtienes i y j (posiciones)
+       int j = h[1];
+       
+       
 private static int calculateFitness(int [] PosicionIndividuo) {
 	int n = 0;
 	int p = 0;
