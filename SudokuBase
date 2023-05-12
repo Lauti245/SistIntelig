@@ -160,23 +160,17 @@ public class Sudoku {
 		
 		return null;
 	}
- private int compruebaFitness(int[] puzzle) {
-	 int sol=0;
-	 int numfilas,numcolumnas, numcuadrados;
-	 numfilas = numcolumnas=numcuadrados =0;
+	List<Integer> cuadradoIzqSup = new ArrayList<Integer>();
+	List<Integer> cuadradoMedSup = new ArrayList<Integer>();
+	List<Integer> cuadradoDerSup = new ArrayList<Integer>();
+	List<Integer> cuadradoIzqMed = new ArrayList<Integer>();
+	List<Integer> cuadradoMedMed = new ArrayList<Integer>();
+	List<Integer> cuadradoDerMed = new ArrayList<Integer>();
+	List<Integer> cuadradoIzqInf = new ArrayList<Integer>();
+	List<Integer> cuadradoMedInf = new ArrayList<Integer>();
+	List<Integer> cuadradoDerInf = new ArrayList<Integer>();
 	
-	List<Integer> filas = new ArrayList<Integer>();
 	List<Integer> columnas = new ArrayList<Integer>();
-	int i=0;
-	while(i<9){
-		if(!(columnas.contains(columnas))) {
-			columnas.add(puzzle[i]);
-		}
-		if(!(cuadradoizq
-				))
-		
-	}
-	
  }
 	
 private int[] REPRODUCE(int[] parent1 , int[] parent2) {
