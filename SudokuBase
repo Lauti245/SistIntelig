@@ -209,55 +209,87 @@ private static int calculateFitness(int [] PosicionIndividuo) {
 	int j = PosicionIndividuo[1]; /* PosicionIndividuo */ 
 	
 	//suma de la columna
-	for(int i2 =0; i<9/long matriz/; i++) {
-		if(i2!=i/posicion de individuo/) {
-			n += matriz[i2][j];/se suma la columna, j es fijo/ 
+	for(int i2 =0; i<9/*long matriz*/; i++) {
+		if(i2!=i/*posicion de individuo*/) {
+			n += matriz[i2][j];/*se suma la columna, j es fijo*/ 
 		}
 	}
 	//suma cuadrado
-	if(j<3 && i < 3)/primer cuadrado/ {
+	if(j<3 && i < 3)/*primer cuadrado*/ {
 		for(int i2 = 0;i2<3;i2++) {
-			for(int j2=0/su valor/; j2<3; j2++) {
+			for(int j2=0/*su valor*/; j2<3; j2++) {
 				if(i2!=i && j2!=j) {
 					p += matriz[i2][j2];
 				}
 			
 			}
 		}
-	}else if(j>2 && j<6 && i < 3)/segundo cuadrado hacia la derecha/ {
+	}else if(j>2 && j<6 && i < 3)/*segundo cuadrado hacia la derecha*/ {
 		for(int i2 = 0;i2<3;i2++) {
-			for(int j2=3/su valor/; j2<6; j2++) {
-				if(j2!=j/posicion del individuo/ && i2!=i /por ej. posicion (1,4)/) {
+			for(int j2=3/*su valor*/; j2<6; j2++) {
+				if(j2!=j/*posicion del individuo*/ && i2!=i /*por ej. posicion (1,4)*/) {
 					p += matriz[i2][j2];
 				}
 			
 			}
 		}
-	}else if(j> 5&& j<9 && i < 3)/tercer cuadrado hacia la derecha/ {
+	}else if(j> 5&& j<9 && i < 3)/*tercer cuadrado hacia la derecha*/ {
 		for(int i2 = 0;i2<3;i2++) {
-			for(int j2=6/su valor/; j2<9; j2++) {
-				if(j2!=j/posicion del individuo/ && i2!=i /por ej. posicion (1,4)/) {
+			for(int j2=6/*su valor*/; j2<9; j2++) {
+				if(j2!=j/*posicion del individuo*/ && i2!=i /*por ej. posicion (1,4)*/) {
 					p += matriz[i2][j2];
 				}
 			
 			}
 		}
-	}else if(j<3 && i > 2 && i<6)/cuarto cuadrado/ {
+	}else if(j<3 && i > 2 && i<6)/*cuarto cuadrado*/ {
 		for(int i2 = 3;i2<6;i2++) {
-			for(int j2=0/su valor/; j2<3; j2++) {
-				if(j2!=j/posicion del individuo/ && i2!=i /por ej. posicion (1,4)/) {
+			for(int j2=0/*su valor*/; j2<3; j2++) {
+				if(j2!=j/*posicion del individuo*/ && i2!=i /*por ej. posicion (1,4)*/) {
 					p += matriz[i2][j2];
 				}
 			
 			}
 		}
-	}else if(j>2 && j<6 && i > 2 && i<6)/quinto cuadrado/ {
+	}else if(j>2 && j<6 && i > 2 && i<6)/*quinto cuadrado*/ {
 		for(int i2 = 3;i2<6;i2++) {
-			for(int j2=3/su valor/; j2<6; j2++) {
-				if(j2!=j/posicion del individuo/ && i2!=i /por ej. posicion (1,4)/) {
+			for(int j2=3/*su valor*/; j2<6; j2++) {
+				if(j2!=j/*posicion del individuo*/ && i2!=i /*por ej. posicion (1,4)*/) {
 					p += matriz[i2][j2];
 				}
 			
+			}
+		}
+	}else if (j>5 && j<9 && i>2 && i>6)/*sexto cuadrado*/ {
+		for(int i2 = 3; i2<6; i2++) {
+			for(int j2 = 6; j2<9; j2++) {
+				if(j2!=j && i2!=i) {
+					p+=matriz[i2][j2];
+				}
+			}
+		}
+	}else if(j<3 && i>5 && i <9)/*septimo cuadrado*/ {
+		for(int i2 = 6; i2<9; i2++) {
+			for(int j2 = 0; j2<3; j2++) {
+				if(j2!=j && i2!= i) {
+					p+=matriz[i2][j2];
+				}
+			}
+		}
+	}else if(j>2 && j<6 && i>5 && i<9)/*octavo cuadrado*/{
+		for(int i2 = 6; i2<9; i2++) {
+			for(int j2 =3; j2<6; j2++) {
+				if(j2!=j && i2!=i) {
+					p+=matriz[i2][j2];
+				}
+			}
+		}
+	}else if (i>5 &&  i<9 && j>5 && j<9) /*noveno cuadrado*/{
+		for(int i2 = 6; i2<9; i2++) {
+			for(int j2 = 6; j2<9; j2++) {
+				if(j2!=j && i2!=i) {
+					p+=matriz[i2][j2];
+				}
 			}
 		}
 	}
@@ -267,5 +299,6 @@ private static int calculateFitness(int [] PosicionIndividuo) {
 	
 	
 }
+
 
 }
