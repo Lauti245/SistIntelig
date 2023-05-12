@@ -1,0 +1,232 @@
+package Sudo;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+
+import com.qqwing.Difficulty;
+import com.qqwing.QQWing;
+
+public class Sudoku {
+	private static final int TOTAL = 81;
+	private static final int FILA = 9;
+    private static final int COLUMNA = 9;
+	  private static int[][] matriz = new int[FILA][COLUMNA];
+	  private static int[] puzzle;
+	//create sudoku of specific difficulty level
+	public static int[] computePuzzleByDifficulty(Difficulty d) {
+		QQWing qq = new QQWing();
+			qq.setRecordHistory(true);
+		qq.setLogHistory(false);
+		boolean go_on = true;
+		while (go_on) {
+			qq.generatePuzzle();
+			qq.solve();
+			Difficulty actual_d = qq.getDifficulty();
+			System.out.println("Difficulty: "+actual_d.getName());
+			go_on = !actual_d.equals(d);
+		}
+		puzzle = qq.getPuzzle();
+		return puzzle;
+	}
+	
+	//cheat by creating absurdly simple sudoku, with a given number of holes per row
+	public static int[] computePuzzleWithNHolesPerRow(int numHolesPerRow) {
+		Random rnd = new Random();
+		QQWing qq = new QQWing();
+
+		qq.setRecordHistory(true);
+		qq.setLogHistory(false);
+		qq.generatePuzzle();
+		qq.solve();
+		
+		int []solution = qq.getSolution();
+		HashSet<Integer> set = new HashSet<Integer>();
+		for (int i=0; i<9; i++) {
+			set.clear();
+			while(set.size()<numHolesPerRow) {
+				int n = rnd.nextInt(9);
+				if (set.contains(n)) continue;
+				set.add(n);
+			}
+			for (Integer hole_idx : set) {
+				solution[i*9+hole_idx] = 0;
+			}
+		}
+		return solution;
+	}
+
+	public static void main(String[] args) {
+		int option = 1;
+		//int option = 2;
+		//int option = 3;
+		//int option = 4;
+		//int option = 5;
+		
+        int []puzzle;
+        switch (option) {
+        case 1:
+            //Extremely easy puzzle, should be solvable without tuning the parameters of the genetic algorithm
+            puzzle = computePuzzleWithNHolesPerRow(3);
+            int q = 0;
+            int c = 0;
+            for (int i = 0; i < FILA; i++) {
+                for (int j = 0; j < COLUMNA; j++) {
+                	matriz[i][j] = puzzle[q];
+                	q = q+1;
+                	c = c+1;
+                	if (c == 9) {
+                		c = 0;
+                	}
+                }
+             }
+            QQWing qq = new QQWing();
+            qq.setPuzzle(puzzle);
+            qq.printPuzzle();
+            break;
+        case 2:
+            //Puzzle with difficulty SIMPLE as assessed by QQWing.
+            //Should require just minimal tuning of the parameters of the genetic algorithm
+            puzzle = computePuzzleByDifficulty(Difficulty.SIMPLE);
+            break;
+        case 3:
+            //Puzzle with difficulty EASY as assessed by QQWing.
+            //Should require some tuning of the parameters of the genetic algorithm
+            puzzle = computePuzzleByDifficulty(Difficulty.EASY);
+            break;
+        case 4:
+            //Puzzle with difficulty INTERMEDIATE as assessed by QQWing.
+            //Should require serious effort tuning the parameters of the genetic algorithm
+            puzzle = computePuzzleByDifficulty(Difficulty.INTERMEDIATE);
+            break;
+        case 5:
+            //Puzzle with difficulty EXPERT as assessed by QQWing.
+            //Should require great effort tuning the parameters of the genetic algorithm
+            puzzle = computePuzzleByDifficulty(Difficulty.EXPERT);
+            break;
+        }
+        
+        //IMPORTANT: QQWing returns the puzzle as a single-dimensional array of size 81, row by row.
+        //           Holes (cells without a number from 1 to 9) are represented by the value 0.
+        //           It is advisable to convert this array to a data structure more amenable to manipulation.
+	}
+		private int[] weights;
+	private List<List<Integer>> population;
+	
+	private int[] GeneticAlgorithm(List<List<Integer>> population,int fitness) {
+		int solucion;
+    	int vueltas=0;
+    
+        int[] fitnessValues;
+        do {
+        	vueltas++;
+            int[] weights = weightedBy(population, fitnessValues);
+            int[] population2 = new int[population.length];
+            for (int i = 0; i < population.length; i++) {
+                int[][] parents = weightedRandomChoices(population, weights, 2);
+                int[] child = REPRODUCE(parents[0], parents[1]);
+                if (smallRandomProbability()) {
+                    child = mutate(child);
+                }
+                population2[i] = child;
+            }
+            population = population2;
+        } while (!esAceptable(matriz[]) && (vueltas < 30));
+        // Se retorna el mejor individuo de la población, según su fitness
+        solucion = getBestIndividual(population, fitnessValues);
+        return solucion;
+    
+	}
+	
+ private boolean esAceptable() {
+	 
+	return false;
+	 
+ }
+ private int[] weighted(int[][] population) {
+		for(int i=0;i<population.length;i++) {
+			
+			
+		}
+		
+		return null;
+	}
+	
+private int[] REPRODUCE(int[] parent1 , int[] parent2) {
+	int n = parent1.length;
+	int c = (int) (Math.random()*n) ;
+	
+	    int fila = (c - 1) / parent1.length; // Obtiene la fila del número
+	    
+	    for (int i = fila; i < parent1.length; i++) { 
+	            parent1[i] = parent2[i]; // Modifica el valor de la celda en la fila i y columna j
+	        }    
+	
+	return parent1;		
+}
+private static int calculateFitness(int [] PosicionIndividuo) {
+	int n = 0;
+	int p = 0;
+	int i = PosicionIndividuo[0];
+	int j = PosicionIndividuo[1]; /* PosicionIndividuo */ 
+	
+	//suma de la columna
+	for(int i2 =0; i<9/long matriz/; i++) {
+		if(i2!=i/posicion de individuo/) {
+			n += matriz[i2][j];/se suma la columna, j es fijo/ 
+		}
+	}
+	//suma cuadrado
+	if(j<3 && i < 3)/primer cuadrado/ {
+		for(int i2 = 0;i2<3;i2++) {
+			for(int j2=0/su valor/; j2<3; j2++) {
+				if(i2!=i && j2!=j) {
+					p += matriz[i2][j2];
+				}
+			
+			}
+		}
+	}else if(j>2 && j<6 && i < 3)/segundo cuadrado hacia la derecha/ {
+		for(int i2 = 0;i2<3;i2++) {
+			for(int j2=3/su valor/; j2<6; j2++) {
+				if(j2!=j/posicion del individuo/ && i2!=i /por ej. posicion (1,4)/) {
+					p += matriz[i2][j2];
+				}
+			
+			}
+		}
+	}else if(j> 5&& j<9 && i < 3)/tercer cuadrado hacia la derecha/ {
+		for(int i2 = 0;i2<3;i2++) {
+			for(int j2=6/su valor/; j2<9; j2++) {
+				if(j2!=j/posicion del individuo/ && i2!=i /por ej. posicion (1,4)/) {
+					p += matriz[i2][j2];
+				}
+			
+			}
+		}
+	}else if(j<3 && i > 2 && i<6)/cuarto cuadrado/ {
+		for(int i2 = 3;i2<6;i2++) {
+			for(int j2=0/su valor/; j2<3; j2++) {
+				if(j2!=j/posicion del individuo/ && i2!=i /por ej. posicion (1,4)/) {
+					p += matriz[i2][j2];
+				}
+			
+			}
+		}
+	}else if(j>2 && j<6 && i > 2 && i<6)/quinto cuadrado/ {
+		for(int i2 = 3;i2<6;i2++) {
+			for(int j2=3/su valor/; j2<6; j2++) {
+				if(j2!=j/posicion del individuo/ && i2!=i /por ej. posicion (1,4)/) {
+					p += matriz[i2][j2];
+				}
+			
+			}
+		}
+	}
+
+	
+	return n+p;
+	
+	
+}
+
+}
