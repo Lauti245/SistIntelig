@@ -143,13 +143,41 @@ public class Sudoku {
 	 
  }
  private int[] weighted(int[][] population) {
+	
+	int[] solucion = new int[population.length];
+	int indexSol,k;
+	int[] copy ;
 		for(int i=0;i<population.length;i++) {
+			k =0;
+			copy = puzzle;
+			for(int j =0 ;j<puzzle.length;j++) {
+				if(copy[j]==0) copy[j]=population[i][k];
+			}
+			compruebaFitness();
 			
 			
 		}
 		
 		return null;
 	}
+ private int compruebaFitness(int[] puzzle) {
+	 int sol=0;
+	 int numfilas,numcolumnas, numcuadrados;
+	 numfilas = numcolumnas=numcuadrados =0;
+	
+	List<Integer> filas = new ArrayList<Integer>();
+	List<Integer> columnas = new ArrayList<Integer>();
+	int i=0;
+	while(i<9){
+		if(!(columnas.contains(columnas))) {
+			columnas.add(puzzle[i]);
+		}
+		if(!(cuadradoizq
+				))
+		
+	}
+	
+ }
 	
 private int[] REPRODUCE(int[] parent1 , int[] parent2) {
 	int n = parent1.length;
@@ -162,6 +190,7 @@ private int[] REPRODUCE(int[] parent1 , int[] parent2) {
 	        }    
 	
 	return parent1;		
+}
 }
 
         // Guardar la poblacion en una lista
