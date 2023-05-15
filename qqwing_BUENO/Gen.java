@@ -192,28 +192,27 @@ public class Gen implements Comparable<Gen> {
 	// cambiar
 	private int comprobarCasillas(int[] puzzle) {
 		int solucion = 0;
-		int n = SudokuBase.getFilaCol(); // Assuming SudokuBase.getFilaCol() returns the size of each row/column
-		int seccion = SudokuBase.getFilaSeccion(); // Assuming SudokuBase.getFilaSeccion() returns the size of each
-													// section
+		int n = SudokuBase.getFilaCol(); 
+		int seccion = SudokuBase.getFilaSeccion();
 
 		for (int fila = 0; fila < n; fila += seccion) {
 			for (int columna = 0; columna < n; columna += seccion) {
 				List<Integer> numeros = new ArrayList<>();
 
-				// Iterate over the current section
+				
 				for (int i = fila; i < fila + seccion; i++) {
 					for (int j = columna; j < columna + seccion; j++) {
-						int num = puzzle[i * n + j]; // Accessing the element at (i, j)
+						int num = puzzle[i * n + j];
 
 						if (numeros.contains(num)) {
-							break; // If number is already present in the section, move to the next section
+							break; 
 						} else {
 							numeros.add(num);
 						}
 					}
 				}
 
-				solucion += numeros.size(); // Increment the solution by the number of unique elements in the section
+				solucion += numeros.size(); 
 			}
 		}
 
