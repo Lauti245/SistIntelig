@@ -191,7 +191,7 @@ public class Gen implements Comparable<Gen> {
 
 	// cambiar
 	private int comprobarCasillas(int[] puzzle) {
-		int sol = 0;
+		int solucion = 0;
 		int n = SudokuBase.getFilaCol(); // Assuming SudokuBase.getFilaCol() returns the size of each row/column
 		int seccion = SudokuBase.getFilaSeccion(); // Assuming SudokuBase.getFilaSeccion() returns the size of each
 													// section
@@ -213,14 +213,14 @@ public class Gen implements Comparable<Gen> {
 					}
 				}
 
-				sol += numeros.size(); // Increment the solution by the number of unique elements in the section
+				solucion += numeros.size(); // Increment the solution by the number of unique elements in the section
 			}
 		}
 
-		return sol;
+		return solucion;
 	}
 	private int comprobarColumna(int[] puzzle) {
-		int sol = 0;
+		int solucion = 0;
 		for (int col = 0; col < SudokuBase.getFilaCol(); col++) {
 			Set<Integer> diferentes = new HashSet<>();
 			Set<Integer> repetidos = new HashSet<>();
@@ -235,9 +235,9 @@ public class Gen implements Comparable<Gen> {
 					}
 				}
 			}
-			sol += diferentes.size();
+			solucion += diferentes.size();
 		}
-		return sol;
+		return solucion;
 	}
 
 	public int getFitness() {
