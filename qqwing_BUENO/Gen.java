@@ -1,5 +1,4 @@
 package com.qqwing;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -93,7 +92,7 @@ public class Gen implements Comparable<Gen> {
 	}
 
 	public Gen copy() {
-		List<List<Integer>> genCopy = copyGen(this.gen);
+		List<List<Integer>> genCopy = copiarGen(this.gen);
 		return new Gen(genCopy);
 	}
 
@@ -129,11 +128,11 @@ public class Gen implements Comparable<Gen> {
 
 	// copiamos la lista que recibe como parametro (other)
 
-	private static List<List<Integer>> copyGen(List<List<Integer>> other) {
+	private static List<List<Integer>> copiarGen(List<List<Integer>> other) {
 		List<List<Integer>> sol = new ArrayList<>(other.size());
-		for (List<Integer> row : other) {
-			List<Integer> newRow = new ArrayList<>(row);
-			sol.add(newRow);
+		for (List<Integer> fila : other) {
+			List<Integer> filaAux = new ArrayList<>(fila);
+			sol.add(filaAux);
 		}
 		return sol;
 	}
@@ -144,14 +143,14 @@ public class Gen implements Comparable<Gen> {
 			int eleccionFila = rand.nextInt(poblacion[0].getGen().size());
 			List<Integer> fila = poblacion[i].getGen().get(eleccionFila);
 
-			int intercambio1 = rand.nextInt(fila.size());
-			int intercambio2 = rand.nextInt(fila.size());
+			int extremo1 = rand.nextInt(fila.size());
+			int extremo2 = rand.nextInt(fila.size());
 
-			while (intercambio1 == intercambio2) {
-				intercambio2 = rand.nextInt(fila.size());
+			while (extremo1 == extremo2) {
+				extremo2 = rand.nextInt(fila.size());
 			}
 
-			Collections.swap(fila, intercambio1, intercambio2);
+			Collections.swap(fila, extremo1, extremo2);
 		}
 
 		return poblacion;
@@ -164,13 +163,13 @@ public class Gen implements Comparable<Gen> {
 
 	// funcion de reproduccion coge dos filas (padres) y las reproduce
 	public static Gen[] Reproduce(Gen[] individuos) {
-		int nCruces = individuos[0].getGen().size() - 1;
-		if (nCruces > 0) {
+		int numCruces = individuos[0].getGen().size() - 1;
+		if (numCruces > 0) {
 			for (int i = 0; i < individuos.length; i += 2) {
-				int corte = rand.nextInt(0, nCruces);
+				int corte = rand.nextInt(0, numCruces);
 				List<List<Integer>> gen1 = new ArrayList<>(individuos[i].getGen());
 				List<List<Integer>> gen2 = new ArrayList<>(individuos[i + 1].getGen());
-				for (int j = corte + 1; j <= nCruces; j++) {
+				for (int j = corte + 1; j <= numCruces; j++) {
 					List<Integer> temp = gen1.get(j);
 					gen1.set(j, gen2.get(j));
 					gen2.set(j, temp);
@@ -184,8 +183,8 @@ public class Gen implements Comparable<Gen> {
 
 	// calculamos fitness
 	public void nuevoFitness(SudokuBase sudo) {
-		int[] puzzle = toArray(sudo);
-		fitness = comprobarColumna(puzzle) + comprobarCasillas(puzzle);
+		int[] sudoAux = toArray(sudo);
+		fitness = comprobarColumna(sudoAux) + comprobarCasillas(sudoAux);
 
 	}
 
@@ -223,20 +222,20 @@ public class Gen implements Comparable<Gen> {
 	private int comprobarColumna(int[] puzzle) {
 		int sol = 0;
 		for (int col = 0; col < SudokuBase.getFilaCol(); col++) {
-			Set<Integer> unicos = new HashSet<>();
+			Set<Integer> diferentes = new HashSet<>();
 			Set<Integer> repetidos = new HashSet<>();
 			for (int row = col; row < SudokuBase.getTotal(); row += SudokuBase.getFilaCol()) {
 				int num = puzzle[row];
-				if (!unicos.contains(num) && !repetidos.contains(num)) {
-					unicos.add(num);
+				if (!diferentes.contains(num) && !repetidos.contains(num)) {
+					diferentes.add(num);
 				} else {
-					if (unicos.contains(num)) {
+					if (diferentes.contains(num)) {
 						repetidos.add(num);
-						unicos.remove(num);
+						diferentes.remove(num);
 					}
 				}
 			}
-			sol += unicos.size();
+			sol += diferentes.size();
 		}
 		return sol;
 	}
@@ -248,7 +247,7 @@ public class Gen implements Comparable<Gen> {
 	// transformamos el sudoku en una serie de enteros que almacenamos en un array
 	public int[] toArray(SudokuBase sudo) {
 		int[] sol = Arrays.copyOf(sudo.getPuzle(), SudokuBase.getTotal());
-		List<List<Integer>> genAux = copyGen(gen);
+		List<List<Integer>> genAux = copiarGen(gen);
 		List<Integer> flattenedGen = genAux.stream().flatMap(List::stream).collect(Collectors.toList());
 		int f = 0;
 		for (int i = 0; i < sol.length; i++) {
