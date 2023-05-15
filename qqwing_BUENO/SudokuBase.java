@@ -1,4 +1,5 @@
 package com.qqwing;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -113,6 +114,23 @@ public class SudokuBase {
 	}
 	
 
+
+	public static int[] resolverSudoku(SudokuBase sudo, int poblacionInicial) {
+
+	    Gen inicial = new Gen(sudo);
+	    Gen[] poblacion = inicializaPoblacion(inicial, poblacionInicial);
+
+	    int FitnessGoal = 162;
+	    for (int i = 0; i < poblacion.length || poblacion[poblacion.length - 1].getFitness() != FitnessGoal; i++) {
+	        poblacion = Gen.Reproduce(poblacion);
+	        poblacion = Gen.mutacion(poblacion);
+	        weight(poblacion, sudo);
+	        Arrays.sort(poblacion);// ordenamos de menos a mayor fitness
+	    }
+
+	    int[] resultado = poblacion[poblacion.length - 1].toArray(sudo);
+	    return resultado;
+	}
 	
 	public static int[] algoritmogenetico(SudokuBase sudo, int poblacionInicial) {
         Gen inicial = new Gen(sudo);
@@ -123,7 +141,7 @@ public class SudokuBase {
 
         for (int i = 0; i < poblacion.length || poblacion[poblacion.length - 1].getFitness() != FitnessGoal; i++) {
             poblacion = Gen.Reproduce(poblacion);
-            poblacion = Gen.mutate(poblacion);
+            poblacion = Gen.mutacion(poblacion);
             weight(poblacion, sudo);
             Arrays.sort(poblacion);
 
