@@ -20,7 +20,6 @@ public class SudokuBase {
     private static final String SPACE = "\n";
 	private static int[] puzzle;
 	  
-	  
 	  public int[] getPuzle() {
 		  return puzzle;
 	  }
@@ -115,23 +114,45 @@ public class SudokuBase {
 	
 
 	
-	public static int[] resolverSudoku(SudokuBase sudo, int poblacionInicial) {
+	public static int[] algoritmogenetico(SudokuBase sudo, int poblacionInicial) {
+        Gen inicial = new Gen(sudo);
+        Gen[] poblacion = inicializaPoblacion(inicial, poblacionInicial);
 
-	    Gen inicial = new Gen(sudo);
-	    Gen[] poblacion = generarPoblacionInicial(inicial, poblacionInicial);
+        int FitnessGoal = 162;
+        List<Integer> fitnessLista = new ArrayList<>();
 
-	    int FitnessGoal = 162;
-	    for (int i = 0; i < poblacion.length || poblacion[poblacion.length - 1].getFitness() != FitnessGoal; i++) {
-	        poblacion = Gen.Reproduce(poblacion);
-	        poblacion = Gen.mutacion(poblacion);
-	        weight(poblacion, sudo);
-	        Arrays.sort(poblacion);// ordenamos de menos a mayor fitness
+        for (int i = 0; i < poblacion.length || poblacion[poblacion.length - 1].getFitness() != FitnessGoal; i++) {
+            poblacion = Gen.Reproduce(poblacion);
+            poblacion = Gen.mutate(poblacion);
+            weight(poblacion, sudo);
+            Arrays.sort(poblacion);
+
+            int fitnessMejorIndividuo = poblacion[poblacion.length - 1].getFitness();
+            fitnessLista.add(fitnessMejorIndividuo);
+        }
+
+        int[] resultado = poblacion[poblacion.length - 1].toArray(sudo);
+
+        // Calcular la media de fitness de la población
+        double mediaFitness = calcularMediaFitness(fitnessLista);
+        System.out.println("Media de fitness de la población: " + mediaFitness);
+        //Calcular fitness de la solucion
+        double fitnessSolucion = poblacion[poblacion.length - 1].getFitness();
+        System.out.println("Fitness de la solucion: " + fitnessSolucion);
+
+        return resultado;
+    }
+
+	
+	 private static double calcularMediaFitness(List<Integer> fitnessLista) {
+	        int sumaFitness = 0;
+	        for (int fitness : fitnessLista) {
+	            sumaFitness += fitness;
+	        }
+	        return (double) sumaFitness / fitnessLista.size();
 	    }
-
-	    int[] resultado = poblacion[poblacion.length - 1].toArray(sudo);
-	    return resultado;
-	}
-
+	
+	
 	private static void weight(Gen[] poblacion, SudokuBase sudo) {
 		for (int i = 0; i < poblacion.length; i++) {
 			Gen x = poblacion[i];
@@ -140,21 +161,21 @@ public class SudokuBase {
 	}
 	
 	
-	private static Gen[] generarPoblacionInicial(Gen inicial, int poblacionInicial) {
-	    Gen[] sol = new Gen[poblacionInicial];
-	    sol[0] = inicial;
+	private static Gen[] inicializaPoblacion(Gen inicial, int poblacionInicial) {
+	    Gen[] solucion = new Gen[poblacionInicial];
+	    solucion[0] = inicial;
 	    Set<Gen> poblacionSet = new HashSet<>();
 	    poblacionSet.add(inicial);
 	    for (int i = 1; i < poblacionInicial; i++) {
-	        Gen aux = new Gen(inicial, true); // se aplica una mutacion
-	        if (!poblacionSet.contains(aux)) {
-	            sol[i] = aux;
-	            poblacionSet.add(aux);
+	        Gen gen1 = new Gen(inicial, true); // se aplica una mutacion
+	        if (!poblacionSet.contains(gen1)) {
+	            solucion[i] = gen1;
+	            poblacionSet.add(gen1);
 	        } else {
 	            i--;
 	        }
 	    }
-	    return sol;
+	    return solucion;
 	}
 	
 	
@@ -162,10 +183,10 @@ public class SudokuBase {
 	
 	@Override
     public String toString (){
-        return VerPuzzle(puzzle);
+        return imprimirSudoku(puzzle);
     }
 	
-	private String VerPuzzle(int[] sudoku) {
+	private String imprimirSudoku(int[] sudoku) {
 	    StringBuilder sb = new StringBuilder();
 	    for (int i = 0; i < TOTAL; i++) {
 	        sb.append(sudoku[i] == 0 ? "." : sudoku[i]);
