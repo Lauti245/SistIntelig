@@ -1,0 +1,259 @@
+package Sudo;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class Gen implements Comparable<Gen> {
+	private List<List<Integer>> gen;
+	private static Random rand = new Random();
+	private int fitness;
+	int col = 0;
+	int cuad = 0;
+
+	public Gen(SudokuBase sudo) {
+		gen = representaSudoku(sudo);
+		fitness = 0;
+	}
+
+	// representa el sudoku como listas de lista con posibles dominios
+	// cambiar
+
+	private List<List<Integer>> representaSudoku(SudokuBase sudo) {
+		int[] auxSudo = sudo.getPuzle();
+		List<List<Integer>> sol = new ArrayList<>();
+		List<Integer> posibSolus = posSoluciones(sudo, 0); // dominiio de la fila 0
+		int fila = 0;
+		sol.add(new ArrayList<>());
+
+		for (int i = 0; i < SudokuBase.getTotal(); i++) {
+			if (i % 9 == 0 && i != 0) {
+				fila++; // pasa a la siguiente fila
+				sol.add(new ArrayList<>());
+				posibSolus = posSoluciones(sudo, fila);
+			}
+			if (auxSudo[i] == 0) {
+				sol.get(fila).add(posibSolus.get(0)); // mete la primera posible solucion
+				posibSolus.remove(0); // y la elimina
+			}
+		}
+		return sol;
+
+	}
+
+	
+
+	private List<Integer> posSoluciones(SudokuBase sudo, int fil) {
+	    List<Integer> sol = new ArrayList<>(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+	    int[] puzzle = sudo.getPuzle();
+	    int startIndex = 9 * fil; // Índice inicial de la fila
+	    int endIndex = startIndex + 9; // Índice final de la fila
+
+	    for (int i = startIndex; i < endIndex; i++) {
+	        int num = puzzle[i];
+	        if (num != 0) {
+	            sol.remove(Integer.valueOf(num));
+	        }
+	    }
+
+	    return sol;
+	}
+
+	public Gen(Gen other, boolean mix) {
+		gen = other.copy().getGen();
+		if (mix)
+			permutaDigito();
+		fitness = 0;
+	}
+
+	private Gen(List<List<Integer>> genCopy) {
+		gen = genCopy;
+		fitness = 0;
+	}
+
+	// coge un elemento de una fila de gen y lo inercambia por otro elemento de esa
+	// misma fila, lo hace para todas las filas
+	private void permutaDigito() {
+        Random rand = new Random();
+        for (List<Integer> fila : gen) {
+            for (int i = 0; i < fila.size(); i++) {
+                int j = rand.nextInt(fila.size());
+                int temp = fila.get(i);
+                fila.set(i, fila.get(j));
+                fila.set(j, temp);
+            }
+        }
+	}
+
+	public Gen copy() {
+		List<List<Integer>> genCopy = copiarGen(this.gen);
+		return new Gen(genCopy);
+	}
+
+	public List<List<Integer>> getGen() {
+		return gen;
+	}
+
+	public Integer get(int f, int c) {
+		return gen.get(f).get(c);
+	}
+
+	// convierte el gen en un string
+	@Override
+	public String toString() {
+		return gen.toString();
+	}
+
+	// compara si un gen es igual que otro
+	@Override
+	public boolean equals(Object obj) {
+		boolean equal = false;
+		if (obj instanceof Gen) {
+			equal = ((Gen) obj).getGen().equals(getGen());
+		}
+		return equal;
+	}
+
+	@Override
+	public int hashCode() {
+		return gen.hashCode();
+	}
+
+
+	// copiamos la lista que recibe como parametro (other)
+
+	private static List<List<Integer>> copiarGen(List<List<Integer>> other) {
+		List<List<Integer>> sol = new ArrayList<>(other.size());
+		for (List<Integer> fila : other) {
+			List<Integer> filaAux = new ArrayList<>(fila);
+			sol.add(filaAux);
+		}
+		return sol;
+	}
+
+	// mutamos la poblacion (crossover) intercambia dos elementos de una fila
+	public static Gen[] mutate(Gen[] poblacion) {
+		for (int i = 0; i < poblacion.length; i++) {
+			int eleccionFila = rand.nextInt(poblacion[0].getGen().size());
+			List<Integer> fila = poblacion[i].getGen().get(eleccionFila);
+
+			int extremo1 = rand.nextInt(fila.size());
+			int extremo2 = rand.nextInt(fila.size());
+
+			while (extremo1 == extremo2) {
+				extremo2 = rand.nextInt(fila.size());
+			}
+
+			Collections.swap(fila, extremo1, extremo2);
+		}
+
+		return poblacion;
+	}
+
+	@Override
+	public int compareTo(Gen o) {
+		return ((Integer) fitness).compareTo(o.fitness);
+	}
+
+	// funcion de reproduccion coge dos filas (padres) y las reproduce
+	public static Gen[] Reproduce(Gen[] individuos) {
+		int numCruces = individuos[0].getGen().size() - 1;
+		if (numCruces > 0) {
+			for (int i = 0; i < individuos.length; i += 2) {
+				int corte = rand.nextInt(0, numCruces);
+				List<List<Integer>> gen1 = new ArrayList<>(individuos[i].getGen());
+				List<List<Integer>> gen2 = new ArrayList<>(individuos[i + 1].getGen());
+				for (int j = corte + 1; j <= numCruces; j++) {
+					List<Integer> temp = gen1.get(j);
+					gen1.set(j, gen2.get(j));
+					gen2.set(j, temp);
+				}
+				individuos[i] = new Gen(gen1);
+				individuos[i + 1] = new Gen(gen2);
+			}
+		}
+		return individuos;
+	}
+
+	// calculamos fitness
+	public void nuevoFitness(SudokuBase sudo) {
+		int[] sudoAux = toArray(sudo);
+		fitness = SumaColumna(sudoAux) + sumaCuadrado(sudoAux);
+
+	}
+
+
+	
+	private int sumaCuadrado(int[] puzzle) {
+		int solucion = 0;
+		int n = SudokuBase.getFilaCol(); 
+		int seccion = SudokuBase.getFilaSeccion(); 
+													
+
+		for (int fila = 0; fila < n; fila += seccion) {
+			for (int columna = 0; columna < n; columna += seccion) {
+				List<Integer> numeros = new ArrayList<>();
+
+				
+				for (int i = fila; i < fila + seccion; i++) {
+					for (int j = columna; j < columna + seccion; j++) {
+						int num = puzzle[i * n + j];
+						if (numeros.contains(num)) {
+							break; 
+						} else {
+							numeros.add(num);
+						}
+					}
+				}
+
+				solucion += numeros.size();
+			}
+		}
+
+		return solucion;
+	}
+	private int SumaColumna(int[] puzzle) {
+		int solucion = 0;
+		for (int col = 0; col < SudokuBase.getFilaCol(); col++) {
+			Set<Integer> diferentes = new HashSet<>();
+			Set<Integer> repetidos = new HashSet<>();
+			for (int row = col; row < SudokuBase.getTotal(); row += SudokuBase.getFilaCol()) {
+				int num = puzzle[row];
+				if (!diferentes.contains(num) && !repetidos.contains(num)) {
+					diferentes.add(num);
+				} else {
+					if (diferentes.contains(num)) {
+						repetidos.add(num);
+						diferentes.remove(num);
+					}
+				}
+			}
+			solucion += diferentes.size();
+		}
+		return solucion;
+	}
+
+	public int getFitness() {
+		return fitness;
+	}
+
+	// transformamos el sudoku en una serie de enteros que almacenamos en un array
+	public int[] toArray(SudokuBase sudo) {
+		int[] sol = Arrays.copyOf(sudo.getPuzle(), SudokuBase.getTotal());
+		List<List<Integer>> genAux = copiarGen(gen);
+		List<Integer> flattenedGen = genAux.stream().flatMap(List::stream).collect(Collectors.toList());
+		int f = 0;
+		for (int i = 0; i < sol.length; i++) {
+			if (sol[i] == 0) {
+				sol[i] = flattenedGen.get(f);
+				f++;
+			}
+		}
+		return sol;
+	}
+
+}
